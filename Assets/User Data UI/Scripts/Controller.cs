@@ -136,7 +136,6 @@ public class Controller : MonoBehaviour
            dataRecieved = true;
         }
     }
-
     private void Update()
     {
         if (dataRecieved == true)
