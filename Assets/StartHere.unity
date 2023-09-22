@@ -276,7 +276,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f1618decf0bd07549b4fe2bf90b66b54, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  URL: https://randomuser.me/api/?results=50&inc=name,email,gender,phone,dob
+  URL: https://randomuser.me/api/?results=50&inc=name,email,gender,phone,dob,picture
   usersScreenData:
     hideOnForegroundLost: 1
     windowQueuePriority: 0
