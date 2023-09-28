@@ -6,6 +6,7 @@ using System.Net.Http;
 using System.Threading.Tasks;
 using Task = UnityEditor.VersionControl.Task;
 using System.Text;
+using UnityEngine.Networking;
 
 public class NetworkManager : MonoBehaviour, IService
 {
@@ -41,6 +42,28 @@ public class NetworkManager : MonoBehaviour, IService
         HttpResponseMessage response = await httpClient.DeleteAsync(url);
         TProps result = await FromJson<TProps>(response);
         return result;
+    }
+
+    public void GetSprite<TProps>(string url, TProps data, Action<TProps> callback) where TProps : ISpriteProperties, new()
+    {
+        Debug.Log("download from api");
+        StartCoroutine(GetSpriteCoroutine<TProps>(url, data ,callback));
+    }
+    
+    private IEnumerator GetSpriteCoroutine<TProps>(string url, TProps data ,Action<TProps> callback) where TProps : ISpriteProperties, new()
+    {
+        UnityWebRequest request = UnityWebRequestTexture.GetTexture(url);
+        yield return request.SendWebRequest();
+        Sprite sprite = null;
+        if (request.result == UnityWebRequest.Result.Success)
+        {
+            Texture2D texture = ((DownloadHandlerTexture) request.downloadHandler).texture;
+            sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
+            
+        }
+        
+        data.Sprite = sprite;
+        callback(data);
     }
     
     private HttpContent ToJson<TDProps>(TDProps data)

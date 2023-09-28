@@ -81,15 +81,29 @@ public class UsersScreenData : WindowProperties
 {
     public Dictionary<string,UserData> AllUsers = new Dictionary<string,UserData>();
 }
+
+
+public class SpriteSendProperties : ISpriteProperties
+{
+    private Sprite _sprite;
+    public Sprite Sprite
+    {
+        get => _sprite;
+        set => _sprite = value;
+    }
+
+    public string Email;
+}
 public class UsersScreen : AWindowController<UsersScreenData>
 {
     public GameObject userPrefab;
     public Transform content;
     public AudioClip viewDetailButtonAudioclip;
+    [SerializeField] private string url = "https://randomuser.me/api/?results=50&inc=name,email,gender,phone,dob,picture";
     public async Task ReadUsersData()
     {
         NetworkManager request = ServiceLocator.Instance.Get<NetworkManager>();
-        UsersData data = await request.Get<UsersData>("https://randomuser.me/api/?results=50&inc=name,email,gender,phone,dob,picture");
+        UsersData data = await request.Get<UsersData>(url);
         foreach(Result user in data.results)
         {
             Properties.AllUsers.Add(user.email ,new UserData(user.name.first, user.name.last, user.email, user.gender, user.phone, user.dob.age, user.picture.large ));
@@ -103,22 +117,17 @@ public class UsersScreen : AWindowController<UsersScreenData>
 
     public void ShowUserDetailScreen(string email)
     {
-        StartCoroutine(ShowUserDetailCoroutine(email));
+        SpriteSendProperties spriteSendProperties = new SpriteSendProperties();
+        spriteSendProperties.Email = email;
+        AssetManager assetManager = ServiceLocator.Instance.Get<AssetManager>();
+        assetManager.GetSprite<SpriteSendProperties>(Properties.AllUsers[email].imageUrl, spriteSendProperties ,ProfilePictureCallBack);
     }
     
-    private IEnumerator ShowUserDetailCoroutine(string email)
+    private void ProfilePictureCallBack(SpriteSendProperties data)
     {
-        UnityWebRequest request = UnityWebRequestTexture.GetTexture(Properties.AllUsers[email].imageUrl);
-        yield return request.SendWebRequest();
-        if (request.result == UnityWebRequest.Result.Success)
-        {
-            Texture2D texture = ((DownloadHandlerTexture) request.downloadHandler).texture;
-            Sprite sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), Vector2.zero);
-            Properties.AllUsers[email].image = sprite;
-        }
-        
+        Properties.AllUsers[data.Email].image = data.Sprite;
         UIFrame uiFrame = ServiceLocator.Instance.Get<UIFrame>();
-        uiFrame.OpenWindow("UserDetail Screen", Properties.AllUsers[email]);
+        uiFrame.OpenWindow("UserDetail Screen", Properties.AllUsers[data.Email]);
     }
     
     protected override void OnPropertiesSet() {
