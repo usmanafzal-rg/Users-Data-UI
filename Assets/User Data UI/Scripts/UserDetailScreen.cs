@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Networking;
 using UnityEngine.UI;
+using System.Threading.Tasks;
 
 [Serializable]
 
@@ -25,10 +26,15 @@ public class UserDetailScreen : AWindowController<UserData>
         gender.text = Properties.gender;
         image.sprite = Properties.image;
     }
-
-
     public void OnGoBackClick()
     {
-        Controller.instance.GoBack();
+        UIFrame uiFrame = ServiceLocator.Instance.Get<UIFrame>();
+        uiFrame.CloseWindow("UserDetail Screen");
+    }
+
+    public void OnSettingClick()
+    {
+        UIFrame uiFrame = ServiceLocator.Instance.Get<UIFrame>();
+        uiFrame.OpenWindow("Setting Screen");
     }
 }

@@ -8,7 +8,7 @@ namespace deVoid.UIFramework
     /// This is the centralized access point for all things UI.
     /// All your calls should be directed at this.
     /// </summary>
-    public class UIFrame : MonoBehaviour
+    public class UIFrame : MonoBehaviour, IService
     {
         [Tooltip("Set this to false if you want to manually initialize this UI Frame.")]
         [SerializeField] private bool initializeOnAwake = true;

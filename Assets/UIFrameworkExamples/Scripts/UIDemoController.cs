@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.Collections.Generic;
 using deVoid.Utils;
 using UnityEngine;
@@ -15,7 +15,7 @@ namespace deVoid.UIFramework.Examples
         private UIFrame uiFrame;
 
         private void Awake() {
-            uiFrame = defaultUISettings.CreateUIInstance();
+            uiFrame = defaultUISettings.CreateUIInstance("Users Screen(Clone)");
             Signals.Get<StartDemoSignal>().AddListener(OnStartDemo);
             Signals.Get<NavigateToWindowSignal>().AddListener(OnNavigateToWindow);
             Signals.Get<ShowConfirmationPopupSignal>().AddListener(OnShowConfirmationPopup);
@@ -63,4 +63,4 @@ namespace deVoid.UIFramework.Examples
             uiFrame.OpenWindow(ScreenIds.ConfirmationPopup, popupPayload);
         }
     }
-}
+}*/

@@ -25,9 +25,11 @@ namespace deVoid.UIFramework
         /// </summary>
         /// <param name="instanceAndRegisterScreens">Should the screens listed in the Settings file be instanced and registered?</param>
         /// <returns>A new UI Frame</returns>
-        public UIFrame CreateUIInstance(bool instanceAndRegisterScreens = true) {
-            var newUI = Instantiate(templateUIPrefab);
-
+        public GameObject CreateUIInstance(string firstScreen,bool instanceAndRegisterScreens = true)
+        {
+            GameObject serviceLocator = GameObject.Find("Service Locator");
+            var newUI = Instantiate(templateUIPrefab, serviceLocator.transform);
+            GameObject ret = null;
             if (instanceAndRegisterScreens) {
                 foreach (var screen in screensToRegister) {
                     var screenInstance = Instantiate(screen);
@@ -42,10 +44,15 @@ namespace deVoid.UIFramework
                     else {
                         Debug.LogError("[UIConfig] Screen doesn't contain a ScreenController! Skipping " + screen.name);
                     }
+
+                    if (screenInstance.name.CompareTo(firstScreen) == 0)
+                    {
+                        ret = screenInstance;
+                    }
                 }
             }
 
-            return newUI;
+            return ret;
         }
         
         private void OnValidate() {
