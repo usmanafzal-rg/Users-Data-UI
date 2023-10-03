@@ -11,19 +11,19 @@ public class SettingScreen : AWindowController
     [SerializeField] private Sprite soundOn;
     [SerializeField] private Sprite soundOff;
     [SerializeField] private Image sound;
+    AudioManager _audioManager;
     private void Start()
     {
-        AudioManager audioManager = ServiceLocator.Instance.Get<AudioManager>();
-        float curVolume = audioManager.GetVolume();
+        _audioManager = ServiceLocator.Instance.Get<AudioManager>();
+        float curVolume = _audioManager.GetVolume();
         slider.value = curVolume;
-        sound.sprite = audioManager.GetMute() ? soundOff : soundOn;
+        sound.sprite = _audioManager.GetMute() ? soundOff : soundOn;
     }
 
     public void OnChangeSound(float value)
     {
-        AudioManager audioManager = ServiceLocator.Instance.Get<AudioManager>();
-        audioManager.ChangeVolumeEffectSource(value);
-        audioManager.ChangeVolumeMusicSource(value);
+        _audioManager.ChangeVolumeEffectSource(value);
+        _audioManager.ChangeVolumeMusicSource(value);
     }
     
     public void OnGoBackClick()
@@ -34,9 +34,8 @@ public class SettingScreen : AWindowController
 
     public void ToggleVolume()
     {
-        AudioManager audioManager = ServiceLocator.Instance.Get<AudioManager>();
-        audioManager.ToggleEffectSource();
-        audioManager.ToggleMusicSource();
-        sound.sprite = audioManager.GetMute() ? soundOff : soundOn;
+        _audioManager.ToggleEffectSource();
+        _audioManager.ToggleMusicSource();
+        sound.sprite = _audioManager.GetMute() ? soundOff : soundOn;
     }
 }

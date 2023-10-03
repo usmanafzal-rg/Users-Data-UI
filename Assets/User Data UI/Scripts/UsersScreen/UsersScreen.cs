@@ -106,6 +106,16 @@ public class UsersScreen : AWindowController<UsersScreenData>
     [SerializeField] private string url = "https://randomuser.me/api/?results=50&inc=name,email,gender,phone,dob,picture";
     private List<User> _cells = new List<User>();
     [SerializeField] private Scrollbar _scrollbar;
+    private AudioManager _audioManager;
+    private AssetManager _assetManager;
+    private UIFrame _uiFrame;
+    private void Start()
+    { 
+        _audioManager = ServiceLocator.Instance.Get<AudioManager>();
+        _assetManager = ServiceLocator.Instance.Get<AssetManager>();
+        _uiFrame = ServiceLocator.Instance.Get<UIFrame>();
+    }
+
     public async Task ReadUsersData()
     {
         NetworkManager request = ServiceLocator.Instance.Get<NetworkManager>();
@@ -123,18 +133,17 @@ public class UsersScreen : AWindowController<UsersScreenData>
 
     public void ShowUserDetailScreen(string email)
     {
+        _audioManager.PlayEffect(viewDetailButtonAudioclip);
         SpriteSendProperties spriteSendProperties = new SpriteSendProperties();
         spriteSendProperties.Email = email;
-        AssetManager assetManager = ServiceLocator.Instance.Get<AssetManager>();
-        assetManager.GetSprite(Properties.AllUsers[email].imageUrl, spriteSendProperties ,ProfilePictureCallBack);
+        _assetManager.GetSprite(Properties.AllUsers[email].imageUrl, spriteSendProperties ,ProfilePictureCallBack);
     }
     
     private void ProfilePictureCallBack(ISpriteProperties temp)
     {
         SpriteSendProperties data = (SpriteSendProperties)temp;
         Properties.AllUsers[data.Email].image = data.Sprite;
-        UIFrame uiFrame = ServiceLocator.Instance.Get<UIFrame>();
-        uiFrame.OpenWindow("UserDetail Screen", Properties.AllUsers[data.Email]);
+        _uiFrame.OpenWindow("UserDetail Screen", Properties.AllUsers[data.Email]);
     }
     
     protected override void OnPropertiesSet() {
@@ -144,7 +153,7 @@ public class UsersScreen : AWindowController<UsersScreenData>
             GameObject userObject = Instantiate(userPrefab, content);
             User info = userObject.GetComponent<User>();
             _cells.Add(info);
-            info.Initialize(user, this);
+            info.Initialize(user, ShowUserDetailScreen);
         }
     }
     

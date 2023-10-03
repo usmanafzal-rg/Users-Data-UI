@@ -9,7 +9,7 @@ public class Initializer : MonoBehaviour
 {
     public UISettings defaultUISettings = null;
     public ServiceLocator serviceLocator;
-    void Start()
+    void Awake()
     {
         defaultUISettings.CreateUIInstance();
         serviceLocator.Initialize();

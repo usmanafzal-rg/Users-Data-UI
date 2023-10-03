@@ -11,25 +11,25 @@ using Object = System.Object;
 
 public class User : MonoBehaviour
 {
-    
     public TextMeshProUGUI username;
     public TextMeshProUGUI email;
     public TextMeshProUGUI gender;
     public Button viewDetailsButton;
-    public UsersScreen _screen;
+    private Action<string> _onDetailButtonClick;
     public string thumbnailUrl; 
     public Image thumbnail;
-
-    public void Initialize(UserData user, UsersScreen screen)
+    private AssetManager _assetManager;
+    
+    public void Initialize(UserData user, Action<string> onDetailButtonClick)
     {
+        _assetManager = ServiceLocator.Instance.Get<AssetManager>();
         username.text = user.first + " " + user.last;
         email.text = user.email;
         gender.text = user.gender;
-        _screen = screen;
+        _onDetailButtonClick = onDetailButtonClick;
         thumbnailUrl = user.thumbnailUrl;
-        AssetManager assetManager = ServiceLocator.Instance.Get<AssetManager>();
         ThumbNailSendProperties data = new ThumbNailSendProperties();
-        assetManager.GetSprite(thumbnailUrl, data, ThumbNailCallBack);
+        _assetManager.GetSprite(thumbnailUrl, data, ThumbNailCallBack);
     }
 
     private void ThumbNailCallBack(ISpriteProperties temp)
@@ -37,16 +37,9 @@ public class User : MonoBehaviour
         ThumbNailSendProperties data = (ThumbNailSendProperties) temp;
         thumbnail.sprite = data.Sprite;
     }
-    
-    IEnumerator ViewDetails()
-    {
-        AudioManager audioManager = ServiceLocator.Instance.Get<AudioManager>();
-        audioManager.PlayEffect(_screen.viewDetailButtonAudioclip);
-        yield return new WaitForSeconds(0.4f);
-        _screen.ShowUserDetailScreen(email.text);
-    }
+
     public void OnViewDetailsClick()
     {
-        StartCoroutine(ViewDetails());
+        _onDetailButtonClick(email.text);
     }
 }

@@ -17,7 +17,13 @@ public class UserDetailScreen : AWindowController<UserData>
     public TextMeshProUGUI age;
     public TextMeshProUGUI gender;
     public Image image;
-    
+    private UIFrame _uiFrame;
+
+    private void Start()
+    {
+        _uiFrame = ServiceLocator.Instance.Get<UIFrame>();
+    }
+
     protected override void OnPropertiesSet()
     {
         username.text = Properties.first + " " + Properties.last;
@@ -29,13 +35,11 @@ public class UserDetailScreen : AWindowController<UserData>
     }
     public void OnGoBackClick()
     {
-        UIFrame uiFrame = ServiceLocator.Instance.Get<UIFrame>();
-        uiFrame.CloseWindow("UserDetail Screen");
+        _uiFrame.CloseWindow("UserDetail Screen");
     }
 
     public void OnSettingClick()
     {
-        UIFrame uiFrame = ServiceLocator.Instance.Get<UIFrame>();
-        uiFrame.OpenWindow("Setting Screen");
+        _uiFrame.OpenWindow("Setting Screen");
     }
 }
