@@ -44,13 +44,12 @@ public class NetworkManager : MonoBehaviour, IService
         return result;
     }
 
-    public void GetSprite<TProps>(string url, TProps data, Action<TProps> callback) where TProps : ISpriteProperties, new()
+    public void GetSprite<TProps>(string url, TProps data, Action<TProps> callback) where TProps : ISpriteProperties
     {
-        Debug.Log("download from api");
         StartCoroutine(GetSpriteCoroutine<TProps>(url, data ,callback));
     }
     
-    private IEnumerator GetSpriteCoroutine<TProps>(string url, TProps data ,Action<TProps> callback) where TProps : ISpriteProperties, new()
+    private IEnumerator GetSpriteCoroutine<TProps>(string url, TProps data ,Action<TProps> callback) where TProps : ISpriteProperties
     {
         UnityWebRequest request = UnityWebRequestTexture.GetTexture(url);
         yield return request.SendWebRequest();

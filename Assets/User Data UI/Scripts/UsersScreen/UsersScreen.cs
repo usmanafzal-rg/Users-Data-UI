@@ -6,6 +6,8 @@ using deVoid.Utils;
 using UnityEngine;
 using System.Threading.Tasks;
 using UnityEngine.Networking;
+using UnityEngine.UI;
+using Object = System.Object;
 
 [Serializable]
 public class Name
@@ -65,7 +67,8 @@ public class UserData : WindowProperties
     public int age;
     public string imageUrl;
     public Sprite image = null;
-    public UserData(string fname, string lname, string email, string gender, string phone, int age, string imageUrl)
+    public string thumbnailUrl = null;
+    public UserData(string fname, string lname, string email, string gender, string phone, int age, string imageUrl, string thumbnailUrl)
     {
         first = fname;
         last = lname;
@@ -74,6 +77,7 @@ public class UserData : WindowProperties
         this.phone = phone;
         this.age = age;
         this.imageUrl = imageUrl;
+        this.thumbnailUrl = thumbnailUrl;
     }
 }
 [Serializable]
@@ -100,13 +104,15 @@ public class UsersScreen : AWindowController<UsersScreenData>
     public Transform content;
     public AudioClip viewDetailButtonAudioclip;
     [SerializeField] private string url = "https://randomuser.me/api/?results=50&inc=name,email,gender,phone,dob,picture";
+    private List<User> _cells = new List<User>();
+    [SerializeField] private Scrollbar _scrollbar;
     public async Task ReadUsersData()
     {
         NetworkManager request = ServiceLocator.Instance.Get<NetworkManager>();
         UsersData data = await request.Get<UsersData>(url);
         foreach(Result user in data.results)
         {
-            Properties.AllUsers.Add(user.email ,new UserData(user.name.first, user.name.last, user.email, user.gender, user.phone, user.dob.age, user.picture.large ));
+            Properties.AllUsers.Add(user.email ,new UserData(user.name.first, user.name.last, user.email, user.gender, user.phone, user.dob.age, user.picture.large, user.picture.thumbnail ));
         }
     }
 
@@ -120,11 +126,12 @@ public class UsersScreen : AWindowController<UsersScreenData>
         SpriteSendProperties spriteSendProperties = new SpriteSendProperties();
         spriteSendProperties.Email = email;
         AssetManager assetManager = ServiceLocator.Instance.Get<AssetManager>();
-        assetManager.GetSprite<SpriteSendProperties>(Properties.AllUsers[email].imageUrl, spriteSendProperties ,ProfilePictureCallBack);
+        assetManager.GetSprite(Properties.AllUsers[email].imageUrl, spriteSendProperties ,ProfilePictureCallBack);
     }
     
-    private void ProfilePictureCallBack(SpriteSendProperties data)
+    private void ProfilePictureCallBack(ISpriteProperties temp)
     {
+        SpriteSendProperties data = (SpriteSendProperties)temp;
         Properties.AllUsers[data.Email].image = data.Sprite;
         UIFrame uiFrame = ServiceLocator.Instance.Get<UIFrame>();
         uiFrame.OpenWindow("UserDetail Screen", Properties.AllUsers[data.Email]);
@@ -136,10 +143,8 @@ public class UsersScreen : AWindowController<UsersScreenData>
             UserData user = userPair.Value;
             GameObject userObject = Instantiate(userPrefab, content);
             User info = userObject.GetComponent<User>();
-            info.username.text = user.first + " " + user.last;
-            info.email.text = user.email;
-            info.gender.text = user.gender;
-            info._screen = this;
+            _cells.Add(info);
+            info.Initialize(user, this);
         }
     }
     
@@ -147,5 +152,22 @@ public class UsersScreen : AWindowController<UsersScreenData>
     {
         UIFrame uiFrame = ServiceLocator.Instance.Get<UIFrame>();
         uiFrame.OpenWindow("Setting Screen");
+    }
+
+    public void OnBackClick()
+    {
+        CleanUp();
+        UIFrame uiFrame = ServiceLocator.Instance.Get<UIFrame>();
+        uiFrame.CloseWindow("Users Screen");
+    }
+    public void CleanUp()
+    {
+        for(int i = 0; i < _cells.Count; i++)
+        {
+            Destroy(_cells[i].gameObject);
+        }
+        _cells.Clear();
+        Properties.AllUsers.Clear();
+        _scrollbar.value = 1f;
     }
 }

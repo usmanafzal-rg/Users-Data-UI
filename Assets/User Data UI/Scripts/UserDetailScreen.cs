@@ -24,7 +24,8 @@ public class UserDetailScreen : AWindowController<UserData>
         phone.text = Properties.phone;
         age.text = Properties.age.ToString();
         gender.text = Properties.gender;
-        image.sprite = Properties.image;
+        if(Properties.image != null)
+             image.sprite = Properties.image;
     }
     public void OnGoBackClick()
     {

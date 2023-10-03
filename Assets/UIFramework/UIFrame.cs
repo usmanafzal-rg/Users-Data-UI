@@ -307,5 +307,10 @@ namespace deVoid.UIFramework
                 graphicRaycaster.enabled = true;
             }
         }
+
+        public IWindowController FindWindow(string screenId)
+        {
+            return windowLayer.FindWindow(screenId);
+        }
     }
 }

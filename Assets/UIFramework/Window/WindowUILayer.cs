@@ -207,5 +207,15 @@ namespace deVoid.UIFramework
                 }
             }
         }
+
+
+        public IWindowController FindWindow(string screenId)
+        {
+            if (registeredScreens.TryGetValue(screenId, out IWindowController temp))
+            {
+                return temp;
+            }
+            return null;
+        }
     }
 }

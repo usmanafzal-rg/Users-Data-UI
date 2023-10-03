@@ -9,14 +9,11 @@ public class Initializer : MonoBehaviour
 {
     public UISettings defaultUISettings = null;
     public ServiceLocator serviceLocator;
-    async void Start()
+    void Start()
     {
-        GameObject first = defaultUISettings.CreateUIInstance("Users Screen(Clone)");
+        defaultUISettings.CreateUIInstance();
         serviceLocator.Initialize();
         UIFrame uiFrame = ServiceLocator.Instance.Get<UIFrame>();
-        UsersScreen screen = first.GetComponent<UsersScreen>();
-        await screen.ReadUsersData();
-        UsersScreenData data = screen.GetUsersData();
-        uiFrame.OpenWindow("Users Screen", data);
+        uiFrame.OpenWindow("Start Screen");
     }
 }
