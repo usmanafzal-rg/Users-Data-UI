@@ -5,6 +5,7 @@ using deVoid.UIFramework;
 using deVoid.Utils;
 using UnityEngine;
 using System.Threading.Tasks;
+using RSG;
 using UnityEngine.Networking;
 using UnityEngine.UI;
 using Object = System.Object;
@@ -116,14 +117,21 @@ public class UsersScreen : AWindowController<UsersScreenData>
         _uiFrame = ServiceLocator.Instance.Get<UIFrame>();
     }
 
-    public async Task ReadUsersData()
+    public Promise ReadUsersData()
     {
+        Promise promise = new Promise();
         NetworkManager request = ServiceLocator.Instance.Get<NetworkManager>();
-        UsersData data = await request.Get<UsersData>(url);
-        foreach(Result user in data.results)
+        request.Get<UsersData>(url).Then(data =>
         {
-            Properties.AllUsers.Add(user.email ,new UserData(user.name.first, user.name.last, user.email, user.gender, user.phone, user.dob.age, user.picture.large, user.picture.thumbnail ));
-        }
+            foreach(Result user in data.results)
+            {
+                Properties.AllUsers.Add(user.email ,new UserData(user.name.first, user.name.last, user.email, user.gender, user.phone, user.dob.age, user.picture.large, user.picture.thumbnail ));
+            }
+            
+            promise.Resolve();
+        });
+        
+        return promise;
     }
 
     public UsersScreenData GetUsersData()
@@ -131,7 +139,7 @@ public class UsersScreen : AWindowController<UsersScreenData>
         return Properties;
     }
 
-    public void ShowUserDetailScreen(string email)
+    private void ShowUserDetailScreen(string email)
     {
         _audioManager.PlayEffect(viewDetailButtonAudioclip);
         SpriteSendProperties spriteSendProperties = new SpriteSendProperties();
@@ -157,19 +165,19 @@ public class UsersScreen : AWindowController<UsersScreenData>
         }
     }
     
-    public void OnSettingClick()
+    private void OnSettingClick()
     {
         UIFrame uiFrame = ServiceLocator.Instance.Get<UIFrame>();
         uiFrame.OpenWindow("Setting Screen");
     }
 
-    public void OnBackClick()
+    private void OnBackClick()
     {
         CleanUp();
         UIFrame uiFrame = ServiceLocator.Instance.Get<UIFrame>();
         uiFrame.CloseWindow("Users Screen");
     }
-    public void CleanUp()
+    private void CleanUp()
     {
         for(int i = 0; i < _cells.Count; i++)
         {

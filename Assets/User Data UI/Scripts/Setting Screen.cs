@@ -20,19 +20,19 @@ public class SettingScreen : AWindowController
         sound.sprite = _audioManager.GetMute() ? soundOff : soundOn;
     }
 
-    public void OnChangeSound(float value)
+    private void OnChangeSound(float value)
     {
         _audioManager.ChangeVolumeEffectSource(value);
         _audioManager.ChangeVolumeMusicSource(value);
     }
     
-    public void OnGoBackClick()
+    private void OnGoBackClick()
     {
         UIFrame uiFrame = ServiceLocator.Instance.Get<UIFrame>();
         uiFrame.CloseWindow("Setting Screen");
     }
 
-    public void ToggleVolume()
+    private void ToggleVolume()
     {
         _audioManager.ToggleEffectSource();
         _audioManager.ToggleMusicSource();

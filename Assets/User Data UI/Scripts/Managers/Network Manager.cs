@@ -7,15 +7,33 @@ using System.Threading.Tasks;
 using Task = UnityEditor.VersionControl.Task;
 using System.Text;
 using UnityEngine.Networking;
+using RSG;
 
 public class NetworkManager : MonoBehaviour, IService
 {
-    public async Task<TProps> Get<TProps>(string url)
+    public IPromise<TProps> Get<TProps>(string url)
     {
-        using HttpClient httpClient = new HttpClient();
-        HttpResponseMessage response = await httpClient.GetAsync(url);
-        TProps result = await FromJson<TProps>(response);
-        return result;
+        Promise<TProps> promise = new Promise<TProps>();
+        
+        try
+        {
+            HttpClient httpClient = new HttpClient();
+            httpClient.GetAsync(url).ContinueWith(task1 =>
+            {
+                HttpResponseMessage httpResponseMessage = task1.Result;
+                FromJson<TProps>(httpResponseMessage).ContinueWith(task2 =>
+                {
+                    TProps data = (TProps) task2.Result;
+                    promise.Resolve(data);
+                });
+            });
+        }
+        catch (Exception e)
+        {
+            promise.Reject(e);
+        }
+        
+        return promise;
     }
 
     public async Task<TProps> Post<TProps, TDProps>(string url, TDProps data)

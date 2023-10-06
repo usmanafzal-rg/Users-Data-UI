@@ -38,7 +38,7 @@ public class User : MonoBehaviour
         thumbnail.sprite = data.Sprite;
     }
 
-    public void OnViewDetailsClick()
+    private void OnViewDetailsClick()
     {
         _onDetailButtonClick(email.text);
     }

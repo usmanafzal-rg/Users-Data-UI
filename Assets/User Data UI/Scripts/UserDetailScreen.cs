@@ -33,12 +33,12 @@ public class UserDetailScreen : AWindowController<UserData>
         if(Properties.image != null)
              image.sprite = Properties.image;
     }
-    public void OnGoBackClick()
+    private void OnGoBackClick()
     {
         _uiFrame.CloseWindow("UserDetail Screen");
     }
 
-    public void OnSettingClick()
+    private void OnSettingClick()
     {
         _uiFrame.OpenWindow("Setting Screen");
     }
