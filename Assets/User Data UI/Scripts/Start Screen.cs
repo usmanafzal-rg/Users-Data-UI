@@ -8,11 +8,16 @@ public class StartScreen : AWindowController
     {
         UIFrame uiFrame = ServiceLocator.Instance.Get<UIFrame>();
         UsersScreen screen = (UsersScreen) uiFrame.FindWindow("Users Screen");
-        
+        var syncContext = System.Threading.SynchronizationContext.Current;
         screen.ReadUsersData().Then(() =>
         {
             UsersScreenData data = screen.GetUsersData();
-            uiFrame.OpenWindow("Users Screen", data);
+            syncContext.Post(_ =>
+            {
+                UIFrame uiFrame1 = ServiceLocator.Instance.Get<UIFrame>();
+                uiFrame1.OpenWindow("Users Screen", data);
+            }, null);
+            
         });
     }
 }
